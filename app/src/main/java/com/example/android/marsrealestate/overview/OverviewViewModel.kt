@@ -17,6 +17,7 @@
 
 package com.example.android.marsrealestate.overview
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -34,8 +35,6 @@ class OverviewViewModel : ViewModel() {
 
     // The internal MutableLiveData String that stores the status of the most recent request
     private val _status = MutableLiveData<String>()
-
-    // The external immutable LiveData for the request status String
     val status: LiveData<String>
         get() = _status
 
@@ -43,12 +42,16 @@ class OverviewViewModel : ViewModel() {
     val property: LiveData<MarsProperty>
         get() = _property
 
+    private var viewModelJob = Job()
+    private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main)
+
     /**
      * Call getMarsRealEstateProperties() on init so we can display status immediately.
      */
     init {
         getMarsRealEstateProperties()
     }
+
 
     /**
      * Sets the value of the status LiveData to the Mars API status.
@@ -60,11 +63,15 @@ class OverviewViewModel : ViewModel() {
 
             try {
                 var listResult = getPropertiesDeferred.await()
+
+                _status.value = "Sucess: ${listResult.size} Mars properties retrieved"
+
                 if (listResult.size > 0) {
                     _property.value = listResult[0]
+                    Log.d("Fabio", "src: " + (property.value?.imgSrcUrl ?: ""))
                 }
-            } catch (t: Throwable) {
-                _status.value = "Failure: " + t.message
+            } catch (e: Exception) {
+                _status.value = "Failure: ${e.message}"
             }
         }
     }
@@ -73,7 +80,4 @@ class OverviewViewModel : ViewModel() {
         super.onCleared()
         viewModelJob.cancel()
     }
-
-    private var viewModelJob = Job()
-    private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main)
 }

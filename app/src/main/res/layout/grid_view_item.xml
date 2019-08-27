@@ -22,7 +22,6 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
         <variable
             name="viewModel"
             type="com.example.android.marsrealestate.overview.OverviewViewModel" />
@@ -30,11 +29,13 @@
 
     <ImageView
         android:id="@+id/mars_image"
-        imageUrl="@{viewModel.property.imgSrcUrl}"
         android:layout_width="match_parent"
         android:layout_height="170dp"
         android:adjustViewBounds="true"
         android:padding="2dp"
         android:scaleType="centerCrop"
+        app:imageUrl="@{viewModel.property.imgSrcUrl}"
         tools:src="@tools:sample/backgrounds/scenic" />
+
+
 </layout>
